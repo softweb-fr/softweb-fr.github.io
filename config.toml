@@ -1,4 +1,4 @@
-baseURL = "https://softweb-fr.github.io/website/"
+baseURL = "https://softweb-fr.github.io/"
 languageCode = "fr-fr"
 defaultContentLanguage = "fr"
 title = "Softweb"
