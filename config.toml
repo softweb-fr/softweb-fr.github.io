@@ -23,7 +23,7 @@ project_tagline = "Don't touch my closure!"
 
 # Date format for post list and single pages
 # For more date formats see https://gohugo.io/functions/format/
-dateFormat = "2008-01-02"
+dateFormat = "2006-01-02"
 
 footer = "Sources on [Github](https://github.com/softweb-fr/softweb-fr.github.io). Made with [Hugo](https://gohugo.io/). Themed by [Cayman](https://github.com/zwbetz-gh/cayman-hugo-theme)."
 
