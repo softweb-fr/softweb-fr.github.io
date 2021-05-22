@@ -1,6 +1,6 @@
 ---
 title: "NestJS Request Logger"
-date: 2021-05-22T17:03:07+02:00
+date: 2021-05-22
 draft: false
 ---
 

@@ -7,11 +7,28 @@ theme = "cayman-hugo-theme"
 # Google analytics
 googleAnalytics = "UA-43088213-1"
 
+# Disqus comments
+disqusShortname = "softweb-fr"
+
 # Syntax highlighting
 pygmentsCodefences = true
 pygmentsStyle = "pygments"
 
+[permalinks]
+  post = "/:filename/"
+
 [params]
-project_name = "Softweb.fr"
+project_name = "SOFTWEB.FR"
 project_tagline = "Don't touch my closure!"
-footer = "Made with [Hugo](https://gohugo.io/). Themed by [Cayman](https://github.com/zwbetz-gh/cayman-hugo-theme)."
+
+# Date format for post list and single pages
+# For more date formats see https://gohugo.io/functions/format/
+dateFormat = "2008-01-02"
+
+footer = "Sources on [Github](https://github.com/softweb-fr/softweb-fr.github.io). Made with [Hugo](https://gohugo.io/). Themed by [Cayman](https://github.com/zwbetz-gh/cayman-hugo-theme)."
+
+[menu]
+  [[menu.nav]]
+    name = "Blog"
+    url = "/"
+    weight = 1
