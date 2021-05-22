@@ -117,8 +117,6 @@ const httpLoggerService = await this.moduleRef.resolve(HttpLoggerService, contex
 
 En creusant un peu dans les internals, j'ai trouvé que NestJS avait son propre mécanisme pour identifier des requests. C'est pas documenté et j'ai trouvé des issues qui en parlent, mais pas d'autre solution que le workaround que j'ai trouvé.
 
-J'ai fait une PR pour ça: [https://github.com/hikoala/monorepo/pull/358](https://github.com/hikoala/monorepo/pull/358)
-
 Concrètement je vais récupérer le internalId que NestJS set sur l'objet request pour retrouver le `HttpLoggerService` de la request:
 
 ```typescript
