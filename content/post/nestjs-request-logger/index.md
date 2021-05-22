@@ -99,7 +99,7 @@ L'id de la request n'est pas la même l'id de la réponse.
 
 Le `LoggerInterceptor` est scoppé à une request `@Injectable({ scope: Scope.REQUEST })` or `AnyExceptionFilter` ne l'est pas.
 
-Un composant scoppé à une request ne va être instancié que lorsque qu'une route est résolue. Du coup en cas de 404, le `LoggerInterceptor` n'est pas instancié et donc la requête n'est pas logger. J'ai besoin de ce scope, car c'est comme ça que je peux définir un id par request (c'est le travail du `RequestContextService`).
+Un composant scoppé à une request ne va être instancié que lorsque qu'une route est résolue. Du coup en cas de 404, le `LoggerInterceptor` n'est pas instancié et donc la requête n'est pas logger. J'ai besoin de ce scope, car c'est comme ça que je peux définir un id par request.
 
 `AnyExceptionFilter` a lui aussi besoin du context de la request pour construire un `HttpLoggerService`. Il le récupère par un mécanisme documenté par NestJS: [https://docs.nestjs.com/fundamentals/module-ref#retrieving-instances](https://docs.nestjs.com/fundamentals/module-ref#retrieving-instances)
 
