@@ -1,0 +1,113 @@
+<!doctype html><html lang=fr><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=generator content="Hugo 0.121.1"><meta name=description content="Dans ce tutoriel, nous allons explorer comment importer des fichiers non natifs dans Node.js en utilisant les “Module Customization Hooks”.
+Je vais prendre comme exemple l’importation de fichiers .graphql dans un projet Node.js compilé avec esbuild.
+Mise en place des fichiers initiaux assets/schema.graphql Exemple de schéma GraphQL :
+&#34;Description for the type&#34; type MyObjectType { &#34;&#34;&#34; Description for field Supports **multi-line** description for your [API](http://example.com)! &#34;&#34;&#34; myField: String! otherField( &#34;Description for argument&#34; arg: Int ) } src/index."><link rel=stylesheet href=https://softweb.fr/css/normalize.css><link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel=stylesheet type=text/css><link rel=stylesheet href=https://softweb.fr/css/cayman.ea0e967413f3851071cc8ace3621bc4205fe8fa79b2abe3d7bf94ff2841f0d47.css><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><title>Nodejs Module Customization Hooks | Softweb</title></head><body><section class=page-header><h1 class=project-name>SOFTWEB.FR</h1><h2 class=project-tagline>Don&rsquo;t touch my closure!</h2><nav><a href=/ class=btn>Blog</a>
+<a href=/tags/ class=btn>Tags</a>
+<a href=/index.xml class=btn>RSS</a></nav></section><section class=main-content><h1>Nodejs Module Customization Hooks</h1><div><strong>Publish date: </strong>2024-01-04</div><p>Dans ce tutoriel, nous allons explorer comment importer des fichiers non natifs dans Node.js en utilisant les
+<a href=https://nodejs.org/docs/latest-v20.x/api/module.html#customization-hooks>&ldquo;Module Customization Hooks&rdquo;</a>.</p><p>Je vais prendre comme exemple l&rsquo;importation de fichiers <code>.graphql</code> dans un projet Node.js compilé avec esbuild.</p><h2 id=mise-en-place-des-fichiers-initiaux>Mise en place des fichiers initiaux</h2><h3 id=assetsschemagraphql><code>assets/schema.graphql</code></h3><p>Exemple de schéma GraphQL :</p><div class=highlight><pre tabindex=0 style=-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-graphql data-lang=graphql><span style=display:flex><span><span style=color:#ba2121>&#34;Description for the type&#34;</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:green;font-weight:700>type</span><span style=color:#bbb> </span><span style=color:#00f;font-weight:700>MyObjectType</span><span style=color:#bbb> </span>{<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>  </span><span style=color:#ba2121>&#34;&#34;&#34;
+</span></span></span><span style=display:flex><span><span style=color:#ba2121>  Description for field
+</span></span></span><span style=display:flex><span><span style=color:#ba2121>  Supports **multi-line** description for your [API](http://example.com)!
+</span></span></span><span style=display:flex><span><span style=color:#ba2121>  &#34;&#34;&#34;</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>  </span>myField:<span style=color:#bbb> </span><span style=color:#00f;font-weight:700>String</span>!<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>  </span>otherField(<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#ba2121>&#34;Description for argument&#34;</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>arg:<span style=color:#bbb> </span><span style=color:#00f;font-weight:700>Int</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>  </span>)<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
+</span></span></span></code></pre></div><h3 id=srcindexjs><code>src/index.js</code></h3><p>Tentons d&rsquo;importer directement le fichier <code>.graphql</code>:</p><div class=highlight><pre tabindex=0 style=-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:green;font-weight:700>import</span> graphql from <span style=color:#ba2121>&#39;../assets/schema.graphql&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>console.log({graphql})
+</span></span></code></pre></div><p>À ce stade, aucune configuration spéciale n&rsquo;est mise en place pour gérer l&rsquo;importation des fichiers <code>.graphql</code>.</p><h3 id=esbuildconfigjs><code>./esbuild.config.js</code></h3><p>Voici la configuration de base pour esbuild :</p><div class=highlight><pre tabindex=0 style=-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:green;font-weight:700>import</span> <span style=color:#666>*</span> as esbuild from <span style=color:#ba2121>&#39;esbuild&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green;font-weight:700>await</span> esbuild.build({
+</span></span><span style=display:flex><span>  entryPoints<span style=color:#666>:</span> [<span style=color:#ba2121>&#39;src/index.js&#39;</span>],
+</span></span><span style=display:flex><span>  bundle<span style=color:#666>:</span> <span style=color:green;font-weight:700>true</span>,
+</span></span><span style=display:flex><span>  platform<span style=color:#666>:</span> <span style=color:#ba2121>&#39;node&#39;</span>,
+</span></span><span style=display:flex><span>  target<span style=color:#666>:</span> [<span style=color:#ba2121>&#39;node20&#39;</span>],
+</span></span><span style=display:flex><span>  outfile<span style=color:#666>:</span> <span style=color:#ba2121>&#39;dist/index.js&#39;</span>,
+</span></span><span style=display:flex><span>})
+</span></span></code></pre></div><h2 id=les-erreurs-que-nous-obtenons>Les erreurs que nous obtenons</h2><p>En essayant d&rsquo;exécuter le fichier <code>src/index.js</code>, vous rencontrez l&rsquo;erreur suivante :</p><div class=highlight><pre tabindex=0 style=-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:navy;font-weight:700>$</span> node src/index.js
+</span></span><span style=display:flex><span><span style=color:#888>TypeError [ERR_UNKNOWN_FILE_EXTENSION]: Unknown file extension &#34;.graphql&#34; for assets/schema.graphql
+</span></span></span></code></pre></div><p>En exécutant <code>./esbuild.config.js</code>, vous obtenez :</p><div class=highlight><pre tabindex=0 style=-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:navy;font-weight:700>$</span> node esbuild.config.js
+</span></span><span style=display:flex><span><span style=color:#888>✘ [ERROR] No loader is configured for &#34;.graphql&#34; files: assets/schema.graphql
+</span></span></span><span style=display:flex><span><span style=color:#888></span><span>
+</span></span></span><span style=display:flex><span><span></span><span style=color:#888>    src/index.js:1:20:
+</span></span></span><span style=display:flex><span><span style=color:#888>      1 │ import graphql from &#39;../assets/schema.graphql&#39;
+</span></span></span><span style=display:flex><span><span style=color:#888>        ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+</span></span></span></code></pre></div><p>Ces erreurs indiquent que Node.js et esbuild ne savent pas comment traiter les fichiers avec l&rsquo;extension <code>.graphql</code>.</p><h2 id=solution-via-custom-loader>Solution via Custom Loader</h2><p>Pour résoudre ces problèmes, nous allons configurer Node.js et esbuild pour comprendre et charger les fichiers
+<code>.graphql</code> correctement.</p><p>Installez <a href=https://www.npmjs.com/package/node-esm-loader><code>node-esm-loader</code></a> et
+<a href=https://www.npmjs.com/package/js-string-escape><code>js-string-escape</code></a> pour aider à charger et à transformer le contenu
+<code>.graphql</code>.</p><p>Créez un fichier <code>./.loaderrc.js</code> pour définir comment traiter les fichiers <code>.graphql</code> :</p><div class=highlight><pre tabindex=0 style=-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:green;font-weight:700>import</span> jsStringEscape from <span style=color:#ba2121>&#39;js-string-escape&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green;font-weight:700>export</span> <span style=color:green;font-weight:700>const</span> test <span style=color:#666>=</span> <span style=color:#b68>/\.graphql$/</span>
+</span></span><span style=display:flex><span><span style=color:green;font-weight:700>export</span> <span style=color:green;font-weight:700>const</span> loader <span style=color:#666>=</span> content =&gt; <span style=color:#ba2121>`export default &#34;</span><span style=color:#b68;font-weight:700>${</span>jsStringEscape(content)<span style=color:#b68;font-weight:700>}</span><span style=color:#ba2121>&#34;`</span>
+</span></span><span style=display:flex><span><span style=color:green;font-weight:700>export</span> <span style=color:green;font-weight:700>default</span> {test, loader}
+</span></span></code></pre></div><p>Modifiez le fichier <code>./esbuild.config.js</code> pour intégrer le loader :</p><div class=highlight><pre tabindex=0 style=-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:green;font-weight:700>import</span> <span style=color:#666>*</span> as esbuild from <span style=color:#ba2121>&#39;esbuild&#39;</span>
+</span></span><span style=display:flex><span><span style=color:green;font-weight:700>import</span> {readFile} from <span style=color:#ba2121>&#34;node:fs/promises&#34;</span>
+</span></span><span style=display:flex><span><span style=color:green;font-weight:700>import</span> {resolve} from <span style=color:#ba2121>&#34;node:path&#34;</span>
+</span></span><span style=display:flex><span><span style=color:green;font-weight:700>import</span> {test, loader} from <span style=color:#ba2121>&#39;./.loaderrc.js&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:green;font-weight:700>await</span> esbuild.build({
+</span></span><span style=display:flex><span>  entryPoints<span style=color:#666>:</span> [<span style=color:#ba2121>&#39;src/index.js&#39;</span>],
+</span></span><span style=display:flex><span>  bundle<span style=color:#666>:</span> <span style=color:green;font-weight:700>true</span>,
+</span></span><span style=display:flex><span>  platform<span style=color:#666>:</span> <span style=color:#ba2121>&#39;node&#39;</span>,
+</span></span><span style=display:flex><span>  target<span style=color:#666>:</span> [<span style=color:#ba2121>&#39;node20&#39;</span>],
+</span></span><span style=display:flex><span>  outfile<span style=color:#666>:</span> <span style=color:#ba2121>&#39;dist/index.js&#39;</span>,
+</span></span><span style=display:flex><span>  plugins<span style=color:#666>:</span> [{
+</span></span><span style=display:flex><span>    name<span style=color:#666>:</span> <span style=color:#ba2121>&#34;graphql&#34;</span>,
+</span></span><span style=display:flex><span>    setup(build) {
+</span></span><span style=display:flex><span>      build.onResolve({filter<span style=color:#666>:</span> test}, ({path, resolveDir}) =&gt; ({
+</span></span><span style=display:flex><span>        path<span style=color:#666>:</span> resolve(resolveDir, path)
+</span></span><span style=display:flex><span>      }))
+</span></span><span style=display:flex><span>      build.onLoad({filter<span style=color:#666>:</span> test}, <span style=color:green;font-weight:700>async</span> ({path}) =&gt; ({
+</span></span><span style=display:flex><span>        contents<span style=color:#666>:</span> loader(<span style=color:green;font-weight:700>await</span> readFile(path, <span style=color:#ba2121>&#34;utf8&#34;</span>)),
+</span></span><span style=display:flex><span>      }))
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>  }]
+</span></span><span style=display:flex><span>})
+</span></span></code></pre></div><p>Maintenant nous pouvons exécuter <code>./esbuild.config.js</code> et <code>src/index.js</code> sans erreur :</p><div class=highlight><pre tabindex=0 style=-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:navy;font-weight:700>$</span> node --import<span style=color:#666>=</span>node-esm-loader/register src/index.js
+</span></span><span style=display:flex><span><span style=color:#888>{
+</span></span></span><span style=display:flex><span><span style=color:#888>  graphql: &#39;&#34;Description for the type&#34;\n&#39; +
+</span></span></span><span style=display:flex><span><span style=color:#888>    &#39;type MyObjectType {\n&#39; +
+</span></span></span><span style=display:flex><span><span style=color:#888>    &#39;  &#34;&#34;&#34;\n&#39; +
+</span></span></span><span style=display:flex><span><span style=color:#888>    &#39;  Description for field\n&#39; +
+</span></span></span><span style=display:flex><span><span style=color:#888>    &#39;  Supports **multi-line** description for your [API](http://example.com)!\n&#39; +
+</span></span></span><span style=display:flex><span><span style=color:#888>    &#39;  &#34;&#34;&#34;\n&#39; +
+</span></span></span><span style=display:flex><span><span style=color:#888>    &#39;  myField: String!\n&#39; +
+</span></span></span><span style=display:flex><span><span style=color:#888>    &#39;\n&#39; +
+</span></span></span><span style=display:flex><span><span style=color:#888>    &#39;  otherField(\n&#39; +
+</span></span></span><span style=display:flex><span><span style=color:#888>    &#39;    &#34;Description for argument&#34;\n&#39; +
+</span></span></span><span style=display:flex><span><span style=color:#888>    &#39;    arg: Int\n&#39; +
+</span></span></span><span style=display:flex><span><span style=color:#888>    &#39;  )\n&#39; +
+</span></span></span><span style=display:flex><span><span style=color:#888>    &#39;}&#39;
+</span></span></span><span style=display:flex><span><span style=color:#888>}
+</span></span></span></code></pre></div><div class=highlight><pre tabindex=0 style=-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span><span style=color:navy;font-weight:700>$</span> node esbuild.config.js <span style=color:#666>&amp;&amp;</span> node dist/index.js
+</span></span><span style=display:flex><span><span style=color:#888>{
+</span></span></span><span style=display:flex><span><span style=color:#888>  graphql: &#39;&#34;Description for the type&#34;\n&#39; +
+</span></span></span><span style=display:flex><span><span style=color:#888>    &#39;type MyObjectType {\n&#39; +
+</span></span></span><span style=display:flex><span><span style=color:#888>    &#39;  &#34;&#34;&#34;\n&#39; +
+</span></span></span><span style=display:flex><span><span style=color:#888>    &#39;  Description for field\n&#39; +
+</span></span></span><span style=display:flex><span><span style=color:#888>    &#39;  Supports **multi-line** description for your [API](http://example.com)!\n&#39; +
+</span></span></span><span style=display:flex><span><span style=color:#888>    &#39;  &#34;&#34;&#34;\n&#39; +
+</span></span></span><span style=display:flex><span><span style=color:#888>    &#39;  myField: String!\n&#39; +
+</span></span></span><span style=display:flex><span><span style=color:#888>    &#39;\n&#39; +
+</span></span></span><span style=display:flex><span><span style=color:#888>    &#39;  otherField(\n&#39; +
+</span></span></span><span style=display:flex><span><span style=color:#888>    &#39;    &#34;Description for argument&#34;\n&#39; +
+</span></span></span><span style=display:flex><span><span style=color:#888>    &#39;    arg: Int\n&#39; +
+</span></span></span><span style=display:flex><span><span style=color:#888>    &#39;  )\n&#39; +
+</span></span></span><span style=display:flex><span><span style=color:#888>    &#39;}&#39;
+</span></span></span><span style=display:flex><span><span style=color:#888>}
+</span></span></span></code></pre></div><p>Le fichier <code>dist/index.js</code> qui est généré par esbuild contient le code suivant :</p><div class=highlight><pre tabindex=0 style=-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#408080;font-style:italic>// assets/schema.graphql
+</span></span></span><span style=display:flex><span><span style=color:#408080;font-style:italic></span><span style=color:green;font-weight:700>var</span> schema_default <span style=color:#666>=</span> <span style=color:#ba2121>&#39;&#34;Description for the type&#34;\ntype MyObjectType {\n  &#34;&#34;&#34;\n  Description for field\n  Supports **multi-line** description for your [API](http://example.com)!\n  &#34;&#34;&#34;\n  myField: String!\n\n  otherField(\n    &#34;Description for argument&#34;\n    arg: Int\n  )\n}&#39;</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#408080;font-style:italic>// src/index.js
+</span></span></span><span style=display:flex><span><span style=color:#408080;font-style:italic></span>console.log({ graphql<span style=color:#666>:</span> schema_default });
+</span></span></code></pre></div><p>Nous n&rsquo;avons plus de reférence vers l&rsquo;asset <code>assets/schema.graphql</code> mais le contenu du fichier est directement intégré
+dans le fichier <code>dist/index.js</code>. Le fichier peut donc est déployé sans avoir à se soucier de la gestion des assets.</p><h2 id=conclusion>Conclusion</h2><p>En suivant ces étapes, vous avez réussi à configurer votre projet Node.js pour utiliser des
+<a href=https://nodejs.org/docs/latest-v20.x/api/module.html#customization-hooks>&ldquo;Module Customization Hooks&rdquo;</a> afin d&rsquo;importer
+et de traiter les fichiers <code>.graphql</code>. Cette approche peut être étendue à d&rsquo;autres types de fichiers non natifs et
+permet de simplifier la gestion des assets dans vos projets Node.js.</p><p>Vous pouvez retrouver le code source de cet article sur <a href=https://github.com/ferjul17/custom-loader-example>GitHub</a>.</p><div id=disqus_thread></div><script>window.disqus_config=function(){},function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById("disqus_thread").innerHTML="Disqus comments not available by default when the website is previewed locally.";return}var t=document,e=t.createElement("script");e.async=!0,e.src="//softweb-fr.disqus.com/embed.js",e.setAttribute("data-timestamp",+new Date),(t.head||t.body).appendChild(e)}()</script><noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript><a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a><footer class=site-footer><span class=site-footer-credits>Sources on <a href=https://github.com/softweb-fr/softweb-fr.github.io>Github</a>. Made with <a href=https://gohugo.io/>Hugo</a>. Themed by <a href=https://github.com/zwbetz-gh/cayman-hugo-theme>Cayman</a>.</span></footer></section><script>window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","UA-43088213-1","auto"),ga("send","pageview")</script><script async src=https://www.google-analytics.com/analytics.js></script></body></html>
