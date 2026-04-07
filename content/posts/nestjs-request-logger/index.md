@@ -2,6 +2,8 @@
 title: "NestJS Request Logger"
 date: 2021-05-22
 tags: [nestjs]
+type: post
+showTableOfContents: true
 ---
 
 Je partage ici un retour d'expérience que j'ai fait à mon travail chez [Koala](https://www.hikoala.co/).

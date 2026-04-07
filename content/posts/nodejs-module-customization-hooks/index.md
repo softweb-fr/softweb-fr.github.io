@@ -1,6 +1,9 @@
 ---
 title: "Nodejs Module Customization Hooks"
 date: 2024-01-04
+tags: [nodejs]
+type: post
+showTableOfContents: true
 ---
 
 Dans ce tutoriel, nous allons explorer comment importer des fichiers non natifs dans Node.js en utilisant les
