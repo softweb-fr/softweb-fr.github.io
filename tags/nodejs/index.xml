@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Nodejs on Softweb</title><link>https://softweb.fr/tags/nodejs/</link><description>Recent content in Nodejs on Softweb</description><generator>Hugo</generator><language>fr-fr</language><lastBuildDate>Thu, 04 Jan 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://softweb.fr/tags/nodejs/index.xml" rel="self" type="application/rss+xml"/><item><title>Nodejs Module Customization Hooks</title><link>https://softweb.fr/posts/nodejs-module-customization-hooks/</link><pubDate>Thu, 04 Jan 2024 00:00:00 +0000</pubDate><guid>https://softweb.fr/posts/nodejs-module-customization-hooks/</guid><description>&lt;p&gt;Dans ce tutoriel, nous allons explorer comment importer des fichiers non natifs dans Node.js en utilisant les
+&lt;a href="https://nodejs.org/docs/latest-v20.x/api/module.html#customization-hooks"&gt;&amp;ldquo;Module Customization Hooks&amp;rdquo;&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Je vais prendre comme exemple l&amp;rsquo;importation de fichiers &lt;code&gt;.graphql&lt;/code&gt; dans un projet Node.js compilé avec esbuild.&lt;/p&gt;
+&lt;h2 id="mise-en-place-des-fichiers-initiaux"&gt;Mise en place des fichiers initiaux&lt;/h2&gt;
+&lt;h3 id="assetsschemagraphql"&gt;&lt;code&gt;assets/schema.graphql&lt;/code&gt;&lt;/h3&gt;
+&lt;p&gt;Exemple de schéma GraphQL :&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-graphql" data-lang="graphql"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;Description for the type&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;type&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;MyObjectType&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt; Description for field
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt; Supports **multi-line** description for your [API](http://example.com)!
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt; &amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; myField: &lt;span style="color:#a6e22e"&gt;String&lt;/span&gt;!
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; otherField(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;Description for argument&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; arg: &lt;span style="color:#a6e22e"&gt;Int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; )
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="srcindexjs"&gt;&lt;code&gt;src/index.js&lt;/code&gt;&lt;/h3&gt;
+&lt;p&gt;Tentons d&amp;rsquo;importer directement le fichier &lt;code&gt;.graphql&lt;/code&gt;:&lt;/p&gt;</description></item></channel></rss>
