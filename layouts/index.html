@@ -1,0 +1,9 @@
+{{ define "main" }}
+{{ $posts := where .Site.RegularPages "Section" "posts" }}
+{{ with $posts.ByDate.Reverse | first 1 }}
+  {{ range . }}
+    <script>window.location.replace("{{ .RelPermalink }}");</script>
+    <noscript><a href="{{ .RelPermalink }}">Go to latest post</a></noscript>
+  {{ end }}
+{{ end }}
+{{ end }}
